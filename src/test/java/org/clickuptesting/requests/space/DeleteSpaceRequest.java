@@ -13,6 +13,7 @@ public class DeleteSpaceRequest {
                 .when()
                 .delete(UrlBuilder.getSpaceUrl(spaceId))
                 .then()
+                .log().ifError()
                 .extract()
                 .response();
     }

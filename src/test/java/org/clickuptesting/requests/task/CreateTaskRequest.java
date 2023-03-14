@@ -1,4 +1,4 @@
-package org.clickuptesting.requests.space;
+package org.clickuptesting.requests.task;
 
 import io.restassured.response.Response;
 import org.clickuptesting.requests.base.BaseRequest;
@@ -7,17 +7,16 @@ import org.json.JSONObject;
 
 import static io.restassured.RestAssured.given;
 
-public class CreateSpaceRequest {
-    public static Response createSpaceRequest(JSONObject body) {
+public class CreateTaskRequest {
+    public static Response createTaskResponse(String listId, JSONObject body) {
         return given()
                 .spec(BaseRequest.requestSetup())
                 .body(body.toString())
                 .when()
-                .post(UrlBuilder.getSpacesUrl())
+                .post(UrlBuilder.getTasksUrl(listId))
                 .then()
                 .log().ifError()
                 .extract()
                 .response();
     }
-
 }
