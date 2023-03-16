@@ -4,6 +4,8 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.assertj.core.api.Assertions;
+import org.clickuptesting.dto.request.CreateTaskRequestDto;
+import org.clickuptesting.dto.response.CreateTaskResponseDto;
 import org.clickuptesting.requests.list.CreateListRequest;
 import org.clickuptesting.requests.space.CreateSpaceRequest;
 import org.clickuptesting.requests.space.DeleteSpaceRequest;
@@ -13,12 +15,14 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.slf4j.Logger;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CreateAndEditTaskTests {
     private static String spaceId;
     private static String listId;
     private static String taskId;
+    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(CreateAndEditTaskTests.class);
 
     @Test
     @Order(1)
@@ -31,6 +35,8 @@ class CreateAndEditTaskTests {
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SC_OK);
 
         JsonPath json = response.jsonPath();
+
+        LOGGER.info("Space with ID: {} created", json.getString("id"));
 
         Assertions.assertThat(json.getString("name")).isEqualTo(body.getString("name"));
 
@@ -57,18 +63,16 @@ class CreateAndEditTaskTests {
     @Test
     @Order(3)
     void createTaskTest() {
-        JSONObject body = new JSONObject();
-        body.put("name", "Test Task");
+        CreateTaskRequestDto taskDto = new CreateTaskRequestDto();
+        taskDto.setName("Test Task");
 
-        Response response = CreateTaskRequest.createTaskResponse(listId, body);
+        CreateTaskResponseDto response = CreateTaskRequest.createTaskResponse(listId, taskDto);
+        LOGGER.info("Created task response: {}", response);
 
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SC_OK);
+        Assertions.assertThat(response.getName()).isEqualTo(taskDto.getName());
+        Assertions.assertThat(response.getCreator().getUsername()).isEqualTo("Tomasz Sas");
 
-        JsonPath json = response.jsonPath();
-
-        Assertions.assertThat(json.getString("name")).isEqualTo(body.getString("name"));
-
-        taskId = json.getString("id");
+        taskId = response.getId();
 
 
     }
