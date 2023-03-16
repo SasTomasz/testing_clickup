@@ -1,7 +1,10 @@
 package org.clickuptesting.urls;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.clickuptesting.properties.PropertiesFinder;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UrlBuilder {
     private static final String BASE_URL = "https://api.clickup.com/api/v2";
     private static final String TEAM = "/team";
