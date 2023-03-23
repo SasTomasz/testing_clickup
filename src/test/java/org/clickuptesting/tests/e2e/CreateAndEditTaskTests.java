@@ -10,6 +10,7 @@ import org.clickuptesting.requests.list.CreateListRequest;
 import org.clickuptesting.requests.space.CreateSpaceRequest;
 import org.clickuptesting.requests.space.DeleteSpaceRequest;
 import org.clickuptesting.requests.task.CreateTaskRequest;
+import org.clickuptesting.requests.task.UpdateTaskRequest;
 import org.json.JSONObject;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -79,6 +80,42 @@ class CreateAndEditTaskTests {
 
     @Test
     @Order(4)
+    void editTaskTest() {
+        JSONObject jsonTask = new JSONObject();
+        jsonTask.put("name", "Edit Test");
+        jsonTask.put("description", "Example Test Description");
+
+        Response response = UpdateTaskRequest.updateTaskResponse(jsonTask, taskId);
+        JsonPath jsonResponse = response.jsonPath();
+
+        LOGGER.info("Task updated with data: {}", response);
+
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SC_OK);
+
+
+        Assertions.assertThat(jsonResponse.getString("name")).isEqualTo(jsonTask.getString("name"));
+        Assertions.assertThat(jsonResponse.getString("description")).isEqualTo(jsonTask.getString("description"));
+
+    }
+
+    @Test
+    @Order(5)
+    void closeTaskTest() {
+        JSONObject jsonTask = new JSONObject();
+        jsonTask.put("status", "complete");
+
+        Response response = UpdateTaskRequest.updateTaskResponse(jsonTask, taskId);
+
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SC_OK);
+
+        JsonPath jsonResponse = response.jsonPath();
+
+        Assertions.assertThat(jsonResponse.getString("status.status")).isEqualTo(jsonResponse.getString("status.status"));
+    }
+
+
+    @Test
+    @Order(6)
     void deleteSpaceTest() {
         Response response = DeleteSpaceRequest.deleteSpaceResponse(spaceId);
 

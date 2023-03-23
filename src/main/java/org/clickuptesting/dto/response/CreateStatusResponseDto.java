@@ -7,7 +7,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CreateTaskStatusResponseDto {
+public class CreateStatusResponseDto {
     private String id;
     private String status;
 }

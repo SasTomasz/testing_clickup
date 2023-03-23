@@ -7,10 +7,12 @@ import org.clickuptesting.dto.response.CreateTaskResponseDto;
 import org.clickuptesting.requests.base.BaseRequest;
 import org.clickuptesting.urls.UrlBuilder;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
 import static io.restassured.RestAssured.given;
 
 public class CreateTaskRequest {
+    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(CreateTaskRequest.class);
     public static Response createTaskResponse(String listId, JSONObject body) {
         return given()
                 .spec(BaseRequest.requestSetup())
@@ -24,6 +26,7 @@ public class CreateTaskRequest {
     }
 
     public static CreateTaskResponseDto createTaskResponse(String listId, CreateTaskRequestDto body) {
+        LOGGER.info("Body: {}", body);
         return given()
                 .spec(BaseRequest.requestSetup())
                 .body(body)

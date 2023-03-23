@@ -6,18 +6,22 @@ import org.apache.http.HttpStatus;
 import org.assertj.core.api.Assertions;
 import org.clickuptesting.requests.space.CreateSpaceRequest;
 import org.clickuptesting.requests.space.DeleteSpaceRequest;
+import org.clickuptesting.requests.space.UpdateSpaceRequest;
 import org.json.JSONObject;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.Logger;
 
 import java.util.stream.Stream;
 
-class CreateSpaceTest {
+class CreateAndUpdateSpaceTest {
+    private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(CreateAndUpdateSpaceTest.class);
+
     @Test
-    void createSpaceTest() {
+    void createAndUpdateSpaceTest() {
         String spaceId;
         JSONObject body = new JSONObject();
         body.put("name", "Test Space");
@@ -32,6 +36,10 @@ class CreateSpaceTest {
 
         spaceId = json.getString("id");
 
+        // update space
+        body.put("name", "Update Test");
+        updateSpace(body, spaceId);
+
         // delete space
         Response deleteResponse = DeleteSpaceRequest.deleteSpaceResponse(spaceId);
 
@@ -43,7 +51,7 @@ class CreateSpaceTest {
     @DisplayName("Create space with valid name")
     @ParameterizedTest(name = "Space name: {0}")
     @MethodSource("sampleSpaceNameData")
-    void createSpaceWithValidName(String name) {
+    void createAndUpdateSpaceWithValidName(String name) {
         JSONObject body = new JSONObject();
         body.put("name", name);
         Response response = CreateSpaceRequest.createSpaceRequest(body);
@@ -55,6 +63,10 @@ class CreateSpaceTest {
         Assertions.assertThat(json.getString("name")).isEqualTo(name);
 
         String spaceId = json.getString("id");
+
+        // update space
+        body.put("name", "Update Test");
+        updateSpace(body, spaceId);
 
         // delete space
         Response deleteSpaceResponse = DeleteSpaceRequest.deleteSpaceResponse(spaceId);
@@ -79,5 +91,16 @@ class CreateSpaceTest {
                 Arguments.of("("),
                 Arguments.of(")")
         );
+    }
+
+    private void updateSpace(JSONObject body, String spaceId) {
+        LOGGER.info("Body in updateSpace method: {}", body);
+        Response response = UpdateSpaceRequest.updateSpaceResponse(body, spaceId);
+
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.SC_OK);
+
+        JsonPath jsonResponse = response.jsonPath();
+
+        Assertions.assertThat(jsonResponse.getString("name")).isEqualTo(body.getString("name"));
     }
 }

@@ -11,8 +11,9 @@ public class CreateTaskResponseDto {
     @JsonProperty("custom_id")
     private String customId;
     private String name;
+    private String description;
     @JsonProperty("text_content")
     private String textContent;
     private CreateTaskCreatorResponseDto creator;
-    private CreateTaskStatusResponseDto status;
+    private CreateStatusResponseDto status;
 }
